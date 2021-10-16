@@ -2,7 +2,7 @@
 
 This section contains more detailed instruction for configuring and running Gravwell ingesters.
 
-The Gravwell-created ingesters are released under the BSD open source license and can be found on [Github](https://github.com/gravwell/ingesters). The ingest API is also open source, so you can create your own ingesters for unique data sources, performing additional normalization or pre-processing, or any other manner of things. The ingest API code [is located here](https://github.com/gravwell/ingest).
+The Gravwell-created ingesters are released under the BSD open source license and can be found on [Github](https://github.com/gravwell/gravwell/tree/master/ingesters). The ingest API is also open source, so you can create your own ingesters for unique data sources, performing additional normalization or pre-processing, or any other manner of things. The ingest API code [is located here](https://github.com/gravwell/gravwell/tree/master/ingesters).
 
 In general, for an ingester to send data to Gravwell, the ingester will need to know the “Ingest Secret” of the Gravwell instance, for authentication. This can be found by viewing the `/opt/gravwell/etc/gravwell.conf` file on the Gravwell server and finding the entry for `Ingest-Auth`. If the ingester is running on the same system as Gravwell itself, the installer will usually be able to detect this value and set it automatically.
 
@@ -323,7 +323,187 @@ Source-Override=[fe80::899:b3ff:feb7:2dc6]
 
 ## The Gravwell Federator
 
-The Federator is an entry relay: ingesters connect to the Federator and send it entries, then the Federator passes those entries to an indexer.  The Federator can act as a trust boundary, securely relaying entries across network segments without exposing ingest secrets or allowing untrusted nodes to send data for disallowed tags.  The Federator upstream connections are configured like any other ingester, allowing multiplexing, local caching, encryption, etc.
+The Federator is an entry relay: ingesters connect to thWhenever the ingester sends an entry to that indexer, it will add the appropriate *tag number* to the entry.
+
+71
+
+​
+
+72
+
+## Global Configuration Parameters
+
+73
+
+​
+
+74
+
+Most of the core ingesters support a common set of global configuration parameters.  The shared Global configuration parameters are implemented using the [ingest config](https://godoc.org/github.com/gravwell/ingest/config#IngestConfig) package.  Global configuration parameters should be specified in the Global section of each Gravwell ingester config file.  The following Global ingester parameters are available:
+
+75
+
+​
+
+76
+
+* Ingest-Secret
+
+77
+
+* Connection-Timeout
+
+78
+
+* Rate-Limit
+
+79
+
+* Enable-Compression
+
+80
+
+* Insecure-Skip-TLS-Verify
+
+81
+
+* Cleartext-Backend-Target
+
+82
+
+* Encrypted-Backend-Target
+
+83
+
+* Pipe-Backend-Target
+
+84
+
+* Ingest-Cache-Path
+
+85
+
+* Max-Ingest-Cache
+
+86
+
+* Cache-Depth
+
+87
+
+* Cache-Mode
+
+88
+
+* Log-Level
+
+89
+
+* Log-File
+
+90
+
+* Source-Override
+
+91
+
+* Log-Source-Override
+
+92
+
+​
+
+93
+
+### Ingest-Secret
+
+94
+
+​
+
+95
+
+The Ingest-Secret parameter specifies the token to be used for ingest authentication.  The token specified here MUST match the Ingest-Auth parameter for Gravwell indexers.
+
+96
+
+​
+
+97
+
+### Connection-Timeout
+
+98
+
+​
+
+99
+
+The Connection-Timeout parameter specifies how long we want to wait to connect to an indexer before giving up.  An empty timeout means that the ingester will wait forever to start.  Timeouts should be specified in duration of minutes, seconds, or hours.
+
+100
+
+​
+
+101
+
+#### Examples
+
+102
+
+```
+
+103
+
+Connection-Timeout=30s
+
+104
+
+Connection-Timeout=5m
+
+105
+
+Connection-Timeout=1h
+
+106
+
+```
+
+107
+
+​
+
+108
+
+### Insecure-Skip-TLS-Verify
+
+109
+
+​
+
+110
+
+The Insecure-Skip-TLS-Verify token tells the ingester to ignore bad certificates when connecting over encrypted TLS tunnels. As the name suggests, any and all authentication provided by TLS is thrown out the window and attackers can easily Man-in-the-Middle TLS connections.  The ingest connections will still be encrypted, but the connection is by no means secure.  By default TLS certificates are validated and the connections will fail if the certificate validation fails.
+
+111
+
+​
+
+112
+
+#### Examples
+
+113
+
+```
+
+114
+
+Insecure-Skip-TLS-Verify=true
+
+115
+
+Insecure-Skip-TLS-Verify=falsee Federator and send it entries, then the Federator passes those entries to an indexer.  The Federator can act as a trust boundary, securely relaying entries across network segments without exposing ingest secrets or allowing untrusted nodes to send data for disallowed tags.  The Federator upstream connections are configured like any other ingester, allowing multiplexing, local caching, encryption, etc.
 
 ![](federatorDiagram.png)
 
@@ -415,7 +595,8 @@ Common configuration errors for the Federator include:
 
 The Gravwell ingest API and core ingesters are fully open source under the BSD 2-Clause license.  This means that you can write your own ingesters and integrate Gravwell entry generation into your own products and services.  The core ingest API is written in Go, but the list of available API languages is under active expansion.
 
-[API code](https://github.com/gravwell/ingest)
+[API code](https://github.com/gravwell/gravwell/tree/master/ingest)
+
 
 [API documentation](https://godoc.org/github.com/gravwell/ingest)
 
